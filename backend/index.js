@@ -8,15 +8,36 @@ const urlRoutes = require("./routes/urlRoutes");
 const app = express();
 const port = process.env.PORT || 3000 ;
 
+// const corsOptions = {
+//    origin: [
+//     process.env.FRONTEND_BASE_URL,    // ✅ Production frontend from .env
+//     "http://localhost:5173"           // ✅ Local frontend
+//   ],
+//   credentials: true,
+//   methods: ["GET", "POST", "DELETE"],
+//   allowedHeaders: ["Content-Type", "Authorization"],
+// };
+
+
+const allowedOrigins = [
+  process.env.FRONTEND_BASE_URL,
+  "http://localhost:5173"
+];
+
 const corsOptions = {
-   origin: [
-    process.env.FRONTEND_BASE_URL,    // ✅ Production frontend from .env
-    "http://localhost:5173"           // ✅ Local frontend
-  ],
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like curl or Postman)
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
   credentials: true,
   methods: ["GET", "POST", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"],
 };
+
 
 app.use(cors(corsOptions)); 
 
