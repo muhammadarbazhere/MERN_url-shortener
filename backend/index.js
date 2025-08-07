@@ -14,7 +14,7 @@ const corsOptions = {
     "http://localhost:5173"           // ✅ Local frontend
   ],
   credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  methods: ["GET", "POST", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"],
 };
 
