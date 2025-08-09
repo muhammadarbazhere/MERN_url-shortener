@@ -45,9 +45,13 @@ function UrlShortener() {
 
       const data = await response.json();
       setShortUrl(data.shortUrl);
-      setUrls((prev) => [...prev, data]); // ✅ Correctly include _id
+      setUrls((prev) => [...prev, data]);
       setError("");
       setOriginalUrl(""); // Clear input
+
+      // // ✅ Open the original URL in a new tab right after shortening
+      // window.open(data.originalUrl, "_blank");
+
     } catch (err) {
       setError("Failed to shorten the URL. Please try again.");
     }
@@ -101,14 +105,12 @@ function UrlShortener() {
         {shortUrl && (
           <div className="mt-6">
             <p className="text-white text-lg mb-2">Short URL:</p>
-            <a
-              href={shortUrl}
-              className="text-green-400 text-lg break-all"
-              target="_blank"
-              rel="noopener noreferrer"
+            <button
+              onClick={() => window.open(urls[urls.length - 1].originalUrl, "_blank")}
+              className="text-green-400 text-lg break-all hover:underline"
             >
               {shortUrl}
-            </a>
+            </button>
           </div>
         )}
 
@@ -132,9 +134,12 @@ function UrlShortener() {
                       </a>
                     </td>
                     <td className="px-4 py-2 text-gray-300 break-all">
-                      <a href={url.shortUrl} target="_blank" rel="noopener noreferrer" className="text-green-400 hover:underline">
+                      <button
+                        onClick={() => window.open(url.originalUrl, "_blank")}
+                        className="text-green-400 hover:underline"
+                      >
                         {url.shortUrl}
-                      </a>
+                      </button>
                     </td>
                     <td className="px-4 py-2">
                       <button

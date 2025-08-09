@@ -1,15 +1,18 @@
 const express = require('express');
 const router = express.Router();
-const { createShortUrl,
-    deleteUrl,
-    getAllUrls
- } = require('../controllers/urlController');
+const {
+  createShortUrl,
+  getAllUrls,
+  deleteUrl,
+  redirectToOriginalUrl
+} = require('../controllers/urlController');
 
-// short url 
+// API routes
 router.post('/shorten', createShortUrl);
-// show all url
 router.get('/', getAllUrls);
-// delete the url
 router.delete('/:id', deleteUrl);
+
+// Redirect route — must be last so it doesn't override API paths
+router.get('/:shortId', redirectToOriginalUrl);
 
 module.exports = router;

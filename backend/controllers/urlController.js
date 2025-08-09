@@ -2,6 +2,9 @@ const Url = require("../models/urlSchema");
 const shortid = require("shortid");
 require("dotenv").config();
 
+/**
+ * Create a short URL
+ */
 const createShortUrl = async (req, res) => {
   const { originalUrl } = req.body;
 
@@ -16,10 +19,13 @@ const createShortUrl = async (req, res) => {
       return res.json(url);
     }
 
-    const shortUrl = `${process.env.BASE_URL}/${shortid.generate()}`;
+    const shortId = shortid.generate();
+    const shortUrl = `${process.env.BASE_URL}/${shortId}`;
+
     url = new Url({
       originalUrl,
       shortUrl,
+      shortId, // storing separately makes lookups easier
     });
 
     await url.save();
@@ -30,6 +36,22 @@ const createShortUrl = async (req, res) => {
   }
 };
 
+/**
+ * Get all URLs
+ */
+const getAllUrls = async (req, res) => {
+  try {
+    const urls = await Url.find();
+    res.json(urls);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json("Server error");
+  }
+};
+
+/**
+ * Delete a URL
+ */
 const deleteUrl = async (req, res) => {
   const { id } = req.params;
 
@@ -51,11 +73,19 @@ const deleteUrl = async (req, res) => {
   }
 };
 
-// API to get all URLs
-const getAllUrls = async (req, res) => {
+/**
+ * Redirect to original URL
+ */
+const redirectToOriginalUrl = async (req, res) => {
   try {
-    const urls = await Url.find();
-    res.json(urls);
+    const { shortId } = req.params;
+    const url = await Url.findOne({ shortId });
+
+    if (!url) {
+      return res.status(404).json({ error: "URL not found" });
+    }
+
+    return res.redirect(url.originalUrl);
   } catch (err) {
     console.error(err);
     res.status(500).json("Server error");
@@ -64,6 +94,7 @@ const getAllUrls = async (req, res) => {
 
 module.exports = {
   createShortUrl,
-  deleteUrl,
   getAllUrls,
+  deleteUrl,
+  redirectToOriginalUrl,
 };
